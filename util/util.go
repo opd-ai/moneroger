@@ -88,7 +88,7 @@ func Path() []string {
 func SecurePassword() string {
 	rand.Seed(time.Now().UnixNano())
 	digs := rand.Intn(19)
-	res, err := password.Generate(20, digs, 0, false, false)
+	res, err := password.Generate(20, digs, 0, false, true)
 	if err != nil {
 		panic(err)
 	}
