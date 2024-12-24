@@ -1,3 +1,4 @@
+// Package monerod provides functionality for managing Monero daemon processes.
 package monerod
 
 import (
@@ -10,6 +11,32 @@ import (
 	"github.com/opd-ai/moneroger/util"
 )
 
+// NewMoneroDaemon creates or connects to a Monero daemon instance.
+//
+// Parameters:
+//   - ctx: Context for cancellation and timeout control
+//   - config: Configuration settings for the daemon including:
+//   - DataDir: Directory for blockchain and wallet data
+//   - MoneroPort: RPC port number
+//   - TestNet: Boolean flag for testnet operation
+//
+// Returns:
+//   - *MoneroDaemon: Pointer to the daemon instance
+//   - error: Any error encountered during startup
+//
+// The function will:
+// 1. Check if a daemon is already running on the specified port
+// 2. If running, return a connection to the existing daemon
+// 3. If not running, start a new daemon process
+//
+// Errors:
+//   - Process spawn failures
+//   - Port binding issues
+//   - Context cancellation
+//
+// Related:
+//   - util.Config for configuration options
+//   - util.IsPortInUse for port checking
 func NewMoneroDaemon(ctx context.Context, config util.Config) (*MoneroDaemon, error) {
 	// Check if daemon is already running
 	if util.IsPortInUse(config.MoneroPort) {
@@ -38,6 +65,23 @@ func NewMoneroDaemon(ctx context.Context, config util.Config) (*MoneroDaemon, er
 	return daemon, nil
 }
 
+// start launches the monerod process with appropriate configuration.
+// This is an internal method used by NewMoneroDaemon.
+//
+// Parameters:
+//   - ctx: Context for cancellation and timeout control
+//
+// Returns:
+//   - error: Any error encountered during startup
+//
+// The method will:
+// 1. Configure daemon arguments
+// 2. Launch the monerod process
+// 3. Wait for RPC port availability
+//
+// Related:
+//   - MoneroDPath for executable location
+//   - util.WaitForPort for startup confirmation
 func (m *MoneroDaemon) start(ctx context.Context) error {
 	args := []string{
 		"--data-dir", m.dataDir,
@@ -84,6 +128,21 @@ func (m *MoneroDaemon) start(ctx context.Context) error {
 	return nil
 }
 
+// Shutdown gracefully stops the Monero daemon.
+//
+// Parameters:
+//   - ctx: Context for cancellation and timeout control
+//
+// Returns:
+//   - error: Any error encountered during shutdown
+//
+// The method sends an interrupt signal (SIGINT) to the daemon process,
+// allowing it to clean up and shut down gracefully. If the process
+// isn't running, the method returns nil.
+//
+// Errors:
+//   - Signal delivery failures
+//   - Context cancellation
 func (m *MoneroDaemon) Shutdown(ctx context.Context) error {
 	if m.process != nil {
 		if err := m.process.Signal(os.Interrupt); err != nil {
