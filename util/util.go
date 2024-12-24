@@ -3,13 +3,45 @@ package util
 import (
 	"context"
 	"fmt"
+	"log"
 	"math/rand"
 	"net"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	moneroconst "github.com/opd-ai/moneroger/const"
 	"github.com/sethvargo/go-password/password"
 )
+
+func FileExists(path string) bool {
+	if _, err := os.Stat(path); err != nil {
+		return false
+	}
+	return true
+}
+
+func Path() []string {
+	path := os.Getenv("PATH")
+	if path == "" {
+
+	}
+	elements := []string{}
+	me, err := os.Executable()
+	if err != nil {
+		log.Println("this should probably be impossible but OK", err)
+	}
+	meDir := filepath.Dir(me)
+	elements = append(elements, meDir)
+	workDir, err := os.Getwd()
+	if err != nil {
+		log.Println("this should also be impossible, but OK", err)
+	}
+	elements = append(elements, workDir)
+	elements = append(elements, strings.Split(path, ":")...)
+	return elements
+}
 
 func SecurePassword() string {
 	rand.Seed(time.Now().UnixNano())

@@ -90,8 +90,16 @@ func (w *WalletRPC) start(ctx context.Context) error {
 		"--daemon-login", fmt.Sprintf("%s:%s", w.daemon.RPCUser(), w.daemon.RPCPass()),
 		"--rpc-login", fmt.Sprintf("%s:%s", w.WalletRPCUser(), w.WalletRPCPass()),
 	}
-
-	cmd := exec.CommandContext(ctx, "monero-wallet-rpc", args...)
+	moneroWalletRPC, err := MoneroWalletRPCPath()
+	if err != nil {
+		return errors.E(
+			opStart,
+			errors.ComponentWalletRPC,
+			errors.KindProcess,
+			fmt.Errorf("failed to start wallet-rpc process: %w", err),
+		)
+	}
+	cmd := exec.CommandContext(ctx, moneroWalletRPC, args...)
 
 	// Start the process
 	if err := cmd.Start(); err != nil {

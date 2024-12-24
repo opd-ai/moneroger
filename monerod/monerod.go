@@ -49,8 +49,16 @@ func (m *MoneroDaemon) start(ctx context.Context) error {
 	if m.testnet {
 		args = append(args, "--testnet")
 	}
-
-	cmd := exec.CommandContext(ctx, "monerod", args...)
+	moneroD, err := MoneroDPath()
+	if err != nil {
+		return errors.E(
+			errors.OpProcessSpawn,
+			errors.ComponentMonerod,
+			errors.KindProcess,
+			err,
+		)
+	}
+	cmd := exec.CommandContext(ctx, moneroD, args...)
 	if err := cmd.Start(); err != nil {
 		return errors.E(
 			errors.OpProcessSpawn,
