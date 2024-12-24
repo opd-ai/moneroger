@@ -53,7 +53,7 @@ func NewMoneroDaemon(ctx context.Context, config util.Config) (*MoneroDaemon, er
 		testnet: config.TestNet,
 	}
 
-	if err := daemon.start(ctx); err != nil {
+	if err := daemon.Start(ctx); err != nil {
 		return nil, errors.E(
 			errors.OpStart,
 			errors.ComponentMonerod,
@@ -65,7 +65,7 @@ func NewMoneroDaemon(ctx context.Context, config util.Config) (*MoneroDaemon, er
 	return daemon, nil
 }
 
-// start launches the monerod process with appropriate configuration.
+// Start launches the monerod process with appropriate configuration.
 // This is an internal method used by NewMoneroDaemon.
 //
 // Parameters:
@@ -82,7 +82,7 @@ func NewMoneroDaemon(ctx context.Context, config util.Config) (*MoneroDaemon, er
 // Related:
 //   - MoneroDPath for executable location
 //   - util.WaitForPort for startup confirmation
-func (m *MoneroDaemon) start(ctx context.Context) error {
+func (m *MoneroDaemon) Start(ctx context.Context) error {
 	args := []string{
 		"--data-dir", m.dataDir,
 		"--rpc-bind-port", fmt.Sprintf("%d", m.RPCPort()),

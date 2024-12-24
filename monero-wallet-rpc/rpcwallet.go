@@ -59,7 +59,7 @@ func NewWalletRPC(ctx context.Context, config util.Config, daemon *monerod.Moner
 		daemon:     daemon,
 	}
 
-	if err := wallet.start(ctx); err != nil {
+	if err := wallet.Start(ctx); err != nil {
 		return nil, err
 	}
 
@@ -109,7 +109,7 @@ func validateConfig(config util.Config) error {
 	return nil
 }
 
-// start launches the wallet RPC process with appropriate configuration.
+// Start launches the wallet RPC process with appropriate configuration.
 //
 // Parameters:
 //   - ctx: Context for process management and timeouts
@@ -123,7 +123,7 @@ func validateConfig(config util.Config) error {
 // 3. Launches wallet RPC process
 // 4. Verifies service availability
 // 5. Performs health check
-func (w *WalletRPC) start(ctx context.Context) error {
+func (w *WalletRPC) Start(ctx context.Context) error {
 	// Check if port is already in use
 	if util.IsPortInUse(w.WalletRPCPort()) {
 		return errors.E(
