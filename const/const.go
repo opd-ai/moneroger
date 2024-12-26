@@ -14,7 +14,7 @@ const (
 
 	// DefaultWalletRPCPort is the standard RPC port for monero-wallet-rpc daemon (18082)
 	// This port is used by applications to communicate with the wallet
-	DefaultWalletRPCPort = 18082
+	DefaultWalletRPCPort = 18083
 
 	// DefaultStartupTimeout defines how long to wait for daemons to start (30 seconds)
 	// If a daemon doesn't respond within this time, startup is considered failed

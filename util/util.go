@@ -29,10 +29,14 @@ import (
 // Note: This function returns false for both non-existent files
 // and files that exist but are inaccessible due to permissions.
 func FileExists(path string) bool {
-	if _, err := os.Stat(path); err != nil {
+	if info, err := os.Stat(path); err != nil {
 		return false
+	} else {
+		if !info.IsDir() {
+			return true
+		}
 	}
-	return true
+	return false
 }
 
 // Path returns a slice of directories to search for executables.
