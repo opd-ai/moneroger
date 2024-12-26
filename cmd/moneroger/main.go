@@ -32,7 +32,7 @@ func main() {
 	// Command line flags for configuration
 	var (
 		dataDir    = flag.String("datadir", "", "Directory for blockchain data and wallet files")
-		walletFile = flag.String("wallet", "", "Path to wallet file (.keys)")
+		walletDir  = flag.String("wallet", "", "Path to wallet file (directory)")
 		moneroPort = flag.Int("daemon-port", 18081, "Port for Monero daemon RPC")
 		walletPort = flag.Int("wallet-port", 18083, "Port for wallet RPC")
 		testnet    = flag.Bool("testnet", false, "Use testnet instead of mainnet")
@@ -54,8 +54,8 @@ func main() {
 	if *dataDir == "" {
 		log.Fatal("--datadir is required")
 	}
-	if *walletFile == "" {
-		log.Fatal("--wallet is required")
+	if *walletDir == "" {
+		*walletDir = *dataDir
 	}
 
 	// Convert paths to absolute
@@ -63,7 +63,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to resolve data directory path: %v", err)
 	}
-	absWalletFile, err := filepath.Abs(*walletFile)
+	absWalletFile, err := filepath.Abs(*walletDir)
 	if err != nil {
 		log.Fatalf("Failed to resolve wallet file path: %v", err)
 	}

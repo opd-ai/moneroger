@@ -25,7 +25,7 @@ import (
 // coordinating with the Monero daemon for blockchain access.
 type WalletRPC struct {
 	cmd        *exec.Cmd
-	walletFile string
+	walletDir  string
 	rpcPort    int
 	rpcUser    string
 	rpcPass    string

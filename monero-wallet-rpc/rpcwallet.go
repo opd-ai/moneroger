@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"time"
 
 	"github.com/opd-ai/moneroger/errors"
@@ -56,9 +55,9 @@ func NewWalletRPC(ctx context.Context, config util.Config, daemon *monerod.Moner
 	}
 
 	wallet := &WalletRPC{
-		walletFile: config.WalletFile,
-		rpcPort:    config.WalletPort,
-		daemon:     daemon,
+		walletDir: config.WalletFile,
+		rpcPort:   config.WalletPort,
+		daemon:    daemon,
 	}
 
 	if err := wallet.Start(ctx); err != nil {
@@ -136,7 +135,7 @@ func (w *WalletRPC) Start(ctx context.Context) error {
 	}
 
 	args := []string{
-		"--wallet-dir", filepath.Dir(w.walletFile),
+		"--wallet-dir", w.walletDir,
 		"--rpc-bind-port", fmt.Sprintf("%d", w.WalletRPCPort()),
 		"--daemon-address", fmt.Sprintf("http://localhost:%d", w.daemon.RPCPort()),
 		"--prompt-for-password",
