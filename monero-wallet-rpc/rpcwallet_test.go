@@ -147,7 +147,7 @@ func TestMoneroWalletRPCPath(t *testing.T) {
 		t.Fatal(err)
 	}
 	f.Close()
-	os.Chmod(mockPath, 0755)
+	os.Chmod(mockPath, 0o755)
 
 	// Temporarily modify PATH
 	oldPath := os.Getenv("PATH")
