@@ -2,7 +2,6 @@
 package monerowalletrpc
 
 import (
-	"os"
 	"os/exec"
 
 	"github.com/opd-ai/moneroger/monerod"
@@ -31,7 +30,7 @@ type WalletRPC struct {
 	rpcPass    string
 	walletPass string
 	daemon     *monerod.MoneroDaemon
-	process    *os.Process
+	//process    *os.Process
 }
 
 // WalletState represents the current operational state of the wallet RPC service.

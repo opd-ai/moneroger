@@ -113,7 +113,7 @@ func (m *MoneroDaemon) Start(ctx context.Context) error {
 	}
 
 	m.cmd = cmd
-	m.process = cmd.Process
+	m.cmd.Process = cmd.Process
 
 	// Wait for RPC to become available
 	if err := util.WaitForPort(ctx, m.RPCPort()); err != nil {
@@ -144,8 +144,8 @@ func (m *MoneroDaemon) Start(ctx context.Context) error {
 //   - Signal delivery failures
 //   - Context cancellation
 func (m *MoneroDaemon) Shutdown(ctx context.Context) error {
-	if m.process != nil {
-		if err := m.process.Signal(os.Interrupt); err != nil {
+	if m.cmd.Process != nil {
+		if err := m.cmd.Process.Signal(os.Interrupt); err != nil {
 			return fmt.Errorf("failed to send interrupt to monerod: %w", err)
 		}
 	}

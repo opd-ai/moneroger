@@ -3,7 +3,6 @@
 package monerod
 
 import (
-	"os"
 	"os/exec"
 	"time"
 
@@ -43,7 +42,6 @@ type MoneroDaemon struct {
 	rpcUser string
 	rpcPass string
 	testnet bool
-	process *os.Process
 }
 
 // RPCPort returns the configured RPC port for the daemon.

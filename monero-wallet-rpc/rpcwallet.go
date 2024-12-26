@@ -171,7 +171,6 @@ func (w *WalletRPC) Start(ctx context.Context) error {
 	}
 
 	w.cmd = cmd
-	w.process = cmd.Process
 
 	if err := util.WaitForPort(ctx, w.WalletRPCPort()); err != nil {
 		// Capture output before cleanup
@@ -214,7 +213,7 @@ func (w *WalletRPC) Start(ctx context.Context) error {
 // Related:
 //   - checkHealth for service verification
 func (w *WalletRPC) Shutdown(ctx context.Context) error {
-	if w.process == nil {
+	if w.cmd.Process == nil {
 		return nil
 	}
 
@@ -223,7 +222,7 @@ func (w *WalletRPC) Shutdown(ctx context.Context) error {
 	defer cancel()
 
 	// Send interrupt signal
-	if err := w.process.Signal(os.Interrupt); err != nil {
+	if err := w.cmd.Process.Signal(os.Interrupt); err != nil {
 		return errors.E(
 			opShutdown,
 			errors.ComponentWalletRPC,
@@ -235,7 +234,7 @@ func (w *WalletRPC) Shutdown(ctx context.Context) error {
 	// Wait for process to exit
 	done := make(chan error, 1)
 	go func() {
-		_, err := w.process.Wait()
+		_, err := w.cmd.Process.Wait()
 		done <- err
 	}()
 
@@ -258,7 +257,7 @@ func (w *WalletRPC) Shutdown(ctx context.Context) error {
 		}
 	}
 
-	w.process = nil
+	w.cmd.Process = nil
 	w.cmd = nil
 	return nil
 }
