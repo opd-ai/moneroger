@@ -29,6 +29,7 @@ type WalletRPC struct {
 	rpcPort    int
 	rpcUser    string
 	rpcPass    string
+	walletPass string
 	daemon     *monerod.MoneroDaemon
 	process    *os.Process
 }
@@ -112,4 +113,16 @@ func (m *WalletRPC) WalletRPCPass() string {
 		m.rpcPass = util.SecurePassword()
 	}
 	return m.rpcPass
+}
+
+func (m *WalletRPC) WalletPass() string {
+	if m.walletPass == "" {
+		m.walletPass = "changeme"
+	}
+	return m.rpcPass
+}
+
+func (m *WalletRPC) SetWalletPass(pass string) error {
+	m.walletPass = pass
+	return nil
 }

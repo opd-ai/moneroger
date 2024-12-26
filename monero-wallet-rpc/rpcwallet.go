@@ -3,10 +3,12 @@
 package monerowalletrpc
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	"github.com/opd-ai/moneroger/errors"
@@ -97,14 +99,14 @@ func validateConfig(config util.Config) error {
 		)
 	}
 
-	if _, err := os.Stat(config.WalletFile); os.IsNotExist(err) {
+	/*if _, err := os.Stat(config.WalletFile); os.IsNotExist(err) {
 		return errors.E(
 			opValidateConfig,
 			errors.ComponentWalletRPC,
 			errors.KindSystem,
 			fmt.Errorf("wallet file does not exist: %s", config.WalletFile),
 		)
-	}
+	}*/
 
 	return nil
 }
@@ -124,7 +126,6 @@ func validateConfig(config util.Config) error {
 // 4. Verifies service availability
 // 5. Performs health check
 func (w *WalletRPC) Start(ctx context.Context) error {
-	// Check if port is already in use
 	if util.IsPortInUse(w.WalletRPCPort()) {
 		return errors.E(
 			opStart,
@@ -135,11 +136,13 @@ func (w *WalletRPC) Start(ctx context.Context) error {
 	}
 
 	args := []string{
-		"--wallet-file", w.walletFile,
+		"--wallet-dir", filepath.Dir(w.walletFile),
 		"--rpc-bind-port", fmt.Sprintf("%d", w.WalletRPCPort()),
 		"--daemon-address", fmt.Sprintf("http://localhost:%d", w.daemon.RPCPort()),
+		"--prompt-for-password",
 		"--daemon-login", fmt.Sprintf("%s:%s", w.daemon.RPCUser(), w.daemon.RPCPass()),
 		"--rpc-login", fmt.Sprintf("%s:%s", w.WalletRPCUser(), w.WalletRPCPass()),
+		"--password", w.WalletPass(),
 	}
 	moneroWalletRPC, err := MoneroWalletRPCPath()
 	if err != nil {
@@ -150,34 +153,40 @@ func (w *WalletRPC) Start(ctx context.Context) error {
 			fmt.Errorf("failed to start wallet-rpc process: %w", err),
 		)
 	}
+
 	cmd := exec.CommandContext(ctx, moneroWalletRPC, args...)
 
-	// Start the process
+	// Add stdout/stderr capture
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
 	if err := cmd.Start(); err != nil {
 		return errors.E(
 			opStart,
 			errors.ComponentWalletRPC,
 			errors.KindProcess,
-			fmt.Errorf("failed to start wallet-rpc process: %w", err),
+			fmt.Errorf("failed to start wallet-rpc process: %w\nOutput: %s\nError: %s",
+				err, stdout.String(), stderr.String()),
 		)
 	}
 
 	w.cmd = cmd
 	w.process = cmd.Process
 
-	// Wait for RPC to become available with timeout
 	if err := util.WaitForPort(ctx, w.WalletRPCPort()); err != nil {
-		// Try to clean up the process if port binding fails
+		// Capture output before cleanup
+		output := fmt.Sprintf("Output: %s\nError: %s", stdout.String(), stderr.String())
 		_ = w.Shutdown(ctx)
 		return errors.E(
 			opStart,
 			errors.ComponentWalletRPC,
 			errors.KindTimeout,
-			fmt.Errorf("wallet-rpc failed to bind to port %d: %w", w.WalletRPCPort(), err),
+			fmt.Errorf("wallet-rpc failed to bind to port %d: %w\n%s",
+				w.WalletRPCPort(), err, output),
 		)
 	}
 
-	// Verify the wallet is responding correctly
 	if err := w.checkHealth(ctx); err != nil {
 		_ = w.Shutdown(ctx)
 		return err
@@ -278,4 +287,13 @@ func (w *WalletRPC) checkHealth(ctx context.Context) error {
 		)
 	}
 	return nil
+}
+
+func (m *WalletRPC) PID() string {
+	if m.cmd != nil {
+		if m.cmd.Process != nil {
+			return fmt.Sprintf("%d", m.cmd.Process.Pid)
+		}
+	}
+	return "-1"
 }

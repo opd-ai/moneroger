@@ -125,3 +125,11 @@ func (m *Moneroger) Shutdown(ctx context.Context) error {
 	}
 	return m.monerod.Shutdown(ctx)
 }
+
+func (m *Moneroger) MoneroDaemonPID() string {
+	return m.monerod.PID()
+}
+
+func (m *Moneroger) RPCWalletPID() string {
+	return m.monerowalletrpc.PID()
+}

@@ -151,3 +151,12 @@ func (m *MoneroDaemon) Shutdown(ctx context.Context) error {
 	}
 	return nil
 }
+
+func (m *MoneroDaemon) PID() string {
+	if m.cmd != nil {
+		if m.cmd.Process != nil {
+			return fmt.Sprintf("%d", m.cmd.Process.Pid)
+		}
+	}
+	return "-1"
+}
