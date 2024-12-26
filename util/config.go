@@ -40,16 +40,12 @@ package util
 type Config struct {
 	// DataDir is the base directory for blockchain data and wallet files
 	DataDir string
-
 	// WalletFile is the path to the Monero wallet file
 	WalletFile string
-
 	// MoneroPort is the TCP port for monerod RPC service
 	MoneroPort int
-
 	// WalletPort is the TCP port for monero-wallet-rpc service
 	WalletPort int
-
 	// TestNet determines whether to run on testnet (true) or mainnet (false)
 	TestNet bool
 }

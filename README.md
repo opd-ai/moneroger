@@ -1,6 +1,10 @@
 # Moneroger
 
-Moneroger is a Go library that provides robust process management and coordination for Monero daemons (monerod) and wallet RPC services. It handles process lifecycle, configuration, and health monitoring with proper error handling and graceful shutdown support.
+Moneroger is a Go library that provides robust process management and coordination for Monero daemons (monerod) and wallet RPC services.
+It handles process lifecycle, configuration, and health monitoring with proper error handling and graceful shutdown support.
+
+THIS IS NOT A MONERO-WALLET-RPC implementation.
+It should be combined with one of the extant monero-wallet-rpc implementation, such as [monero "github.com/monero-ecosystem/go-monero-rpc-client/wallet"](https://github.com/monero-ecosystem/go-monero-rpc-client/)
 
 ## Features
 
