@@ -134,10 +134,12 @@ func (w *WalletRPC) Start(ctx context.Context) error {
 		)
 	}
 
+	daemonAddr := fmt.Sprintf("http://localhost:%d", w.daemon.RPCPort())
+
 	args := []string{
 		"--wallet-dir", w.walletDir,
 		"--rpc-bind-port", fmt.Sprintf("%d", w.WalletRPCPort()),
-		"--daemon-address", fmt.Sprintf("http://localhost:%d", w.daemon.RPCPort()),
+		"--daemon-address", daemonAddr,
 		"--prompt-for-password",
 		"--daemon-login", fmt.Sprintf("%s:%s", w.daemon.RPCUser(), w.daemon.RPCPass()),
 		"--rpc-login", fmt.Sprintf("%s:%s", w.WalletRPCUser(), w.WalletRPCPass()),

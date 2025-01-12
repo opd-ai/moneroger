@@ -28,9 +28,9 @@ type WalletRPC struct {
 	rpcPort    int
 	rpcUser    string
 	rpcPass    string
+	rpcHost    string
 	walletPass string
 	daemon     *monerod.MoneroDaemon
-	// process    *os.Process
 }
 
 // WalletState represents the current operational state of the wallet RPC service.

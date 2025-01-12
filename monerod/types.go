@@ -36,12 +36,13 @@ const (
 // The daemon can be configured for either mainnet or testnet operation,
 // with appropriate default ports and network settings applied automatically.
 type MoneroDaemon struct {
-	cmd     *exec.Cmd
-	dataDir string
-	rpcPort int
-	rpcUser string
-	rpcPass string
-	testnet bool
+	cmd           *exec.Cmd
+	dataDir       string
+	rpcPort       int
+	rpcUser       string
+	rpcPass       string
+	testnet       bool
+	useRemoteNode bool
 }
 
 // RPCPort returns the configured RPC port for the daemon.

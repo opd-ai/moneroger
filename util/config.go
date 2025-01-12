@@ -48,4 +48,6 @@ type Config struct {
 	WalletPort int
 	// TestNet determines whether to run on testnet (true) or mainnet (false)
 	TestNet bool
+	// RemoteNode instructs the monero-wallet-rpc client to use a remote port
+	RemoteNode string
 }

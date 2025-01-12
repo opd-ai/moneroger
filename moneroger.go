@@ -58,7 +58,6 @@ type Moneroger struct {
 //   - util.Config
 func NewMoneroger(config util.Config) (*Moneroger, error) {
 	ctx := context.Background()
-
 	// Start Monero daemon
 	daemon, err := monerod.NewMoneroDaemon(ctx, config)
 	if err != nil {

@@ -41,16 +41,18 @@ func NewMoneroDaemon(ctx context.Context, config util.Config) (*MoneroDaemon, er
 	// Check if daemon is already running
 	if util.IsPortInUse(config.MoneroPort) {
 		return &MoneroDaemon{
-			rpcPort: config.MoneroPort,
-			dataDir: config.DataDir,
-			testnet: config.TestNet,
+			rpcPort:       config.MoneroPort,
+			dataDir:       config.DataDir,
+			testnet:       config.TestNet,
+			useRemoteNode: (config.RemoteNode != ""),
 		}, nil
 	}
 
 	daemon := &MoneroDaemon{
-		dataDir: config.DataDir,
-		rpcPort: config.MoneroPort,
-		testnet: config.TestNet,
+		dataDir:       config.DataDir,
+		rpcPort:       config.MoneroPort,
+		testnet:       config.TestNet,
+		useRemoteNode: (config.RemoteNode != ""),
 	}
 
 	if err := daemon.Start(ctx); err != nil {
@@ -83,6 +85,9 @@ func NewMoneroDaemon(ctx context.Context, config util.Config) (*MoneroDaemon, er
 //   - MoneroDPath for executable location
 //   - util.WaitForPort for startup confirmation
 func (m *MoneroDaemon) Start(ctx context.Context) error {
+	if m.useRemoteNode {
+		return nil
+	}
 	args := []string{
 		"--data-dir", m.dataDir,
 		"--rpc-bind-port", fmt.Sprintf("%d", m.RPCPort()),
