@@ -1,5 +1,16 @@
 package util
 
+import (
+	"log"
+	"math"
+	"path/filepath"
+
+	"github.com/opd-ai/moneroger/util"
+	"github.com/ricochet2200/go-disk-usage/du"
+)
+
+var TwoHundredFiftyGigabytes uint64 = uint64(250 * math.Pow(10, 9))
+
 // Config holds the configuration parameters for both monerod and monero-wallet-rpc daemons.
 // It provides all necessary settings for initializing and running the Monero services.
 //
@@ -24,13 +35,14 @@ package util
 //
 // Usage:
 //
-//	config := &Config{
-//	    DataDir:    "/path/to/monero/data",
-//	    WalletFile: "wallet.keys",
-//	    MoneroPort: 18081,
-//	    WalletPort: 18082,
-//	    TestNet:    false,
-//	}
+//		config := &Config{
+//		    DataDir:    "/path/to/monero/data",
+//		    WalletFile: "wallet.keys",
+//		    MoneroPort: 18081,
+//		    WalletPort: 18082,
+//		    TestNet:    false,
+//	        RemoteNode: "",
+//		}
 //
 // Related:
 //   - moneroconst.DefaultMonerodPort
@@ -50,4 +62,25 @@ type Config struct {
 	TestNet bool
 	// RemoteNode instructs the monero-wallet-rpc client to use a remote port
 	RemoteNode string
+}
+
+func RecommendConfig(dataDir string) (config Config) {
+	config.DataDir = dataDir
+	if !util.FileExists(filepath.Join(config.DataDir, "bitmonero.log")) {
+		usage := du.NewDiskUsage(config.DataDir)
+		if usage.Available() > TwoHundredFiftyGigabytes {
+			log.Println("Greater than 250GB available space detected, full node functionality enabled")
+		}
+		config.RemoteNode = ""
+	} else {
+		config.RemoteNode = pickDefaultRemoteNode()
+	}
+	config.TestNet = false
+	config.WalletFile = filepath.Join(config.DataDir, "wallet")
+	config.MoneroPort = 18081
+	config.WalletPort = 18083
+}
+
+func pickDefaultRemoteNode() string {
+	return "not enabled yet"
 }
