@@ -3,6 +3,7 @@ package util
 import (
 	"log"
 	"math"
+	"os"
 	"path/filepath"
 
 	"github.com/ricochet2200/go-disk-usage/du"
@@ -64,6 +65,13 @@ type Config struct {
 }
 
 func RecommendConfig(dataDir string) (config Config) {
+	if dataDir == "" {
+		wd, err := os.Getwd()
+		if err != nil {
+			panic(err)
+		}
+		dataDir = filepath.Join(wd, "moneroger")
+	}
 	config.DataDir = dataDir
 	if !DirExists(config.DataDir) {
 		usage := du.NewDiskUsage(config.DataDir)
