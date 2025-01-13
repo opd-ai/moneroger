@@ -133,9 +133,21 @@ func (w *WalletRPC) Start(ctx context.Context) error {
 			fmt.Errorf("port %d is already in use", w.WalletRPCPort()),
 		)
 	}
-
-	daemonAddr := fmt.Sprintf("http://localhost:%d", w.daemon.RPCPort())
-
+	var daemonAddr string
+	if w.remoteNode == "" {
+		daemonAddr = fmt.Sprintf("http://localhost:%d", w.daemon.RPCPort())
+	} else {
+		scheme, host, port, err := validateRemoteDaemon(w.remoteNode)
+		if err != nil {
+			errors.E(
+				opStart,
+				errors.ComponentWalletRPC,
+				errors.KindConfig,
+				fmt.Errorf("invalid remote daemon URL: %s : %s", w.remoteNode, err),
+			)
+		}
+		daemonAddr = fmt.Sprintf("%s://%s:%s", scheme, host, port)
+	}
 	args := []string{
 		"--wallet-dir", w.walletDir,
 		"--rpc-bind-port", fmt.Sprintf("%d", w.WalletRPCPort()),

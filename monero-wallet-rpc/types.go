@@ -29,6 +29,7 @@ type WalletRPC struct {
 	rpcUser    string
 	rpcPass    string
 	rpcHost    string
+	remoteNode string
 	walletPass string
 	daemon     *monerod.MoneroDaemon
 }
