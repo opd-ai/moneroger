@@ -39,6 +39,17 @@ func FileExists(path string) bool {
 	return false
 }
 
+func DirExists(path string) bool {
+	if info, err := os.Stat(path); err != nil {
+		return false
+	} else {
+		if info.IsDir() {
+			return true
+		}
+	}
+	return false
+}
+
 // Path returns a slice of directories to search for executables.
 // It combines:
 // - The directory containing the current executable

@@ -5,7 +5,6 @@ import (
 	"math"
 	"path/filepath"
 
-	"github.com/opd-ai/moneroger/util"
 	"github.com/ricochet2200/go-disk-usage/du"
 )
 
@@ -66,7 +65,7 @@ type Config struct {
 
 func RecommendConfig(dataDir string) (config Config) {
 	config.DataDir = dataDir
-	if !util.FileExists(filepath.Join(config.DataDir, "bitmonero.log")) {
+	if !DirExists(config.DataDir) {
 		usage := du.NewDiskUsage(config.DataDir)
 		if usage.Available() > TwoHundredFiftyGigabytes {
 			log.Println("Greater than 250GB available space detected, full node functionality enabled")
