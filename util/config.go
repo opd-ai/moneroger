@@ -78,6 +78,7 @@ func RecommendConfig(dataDir string) (config Config) {
 	config.WalletFile = filepath.Join(config.DataDir, "wallet")
 	config.MoneroPort = 18081
 	config.WalletPort = 18083
+	return
 }
 
 func pickDefaultRemoteNode() string {
