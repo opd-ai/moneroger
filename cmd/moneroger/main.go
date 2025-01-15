@@ -74,13 +74,11 @@ func main() {
 	}
 
 	// Create configuration
-	config := util.Config{
-		DataDir:    absDataDir,
-		WalletFile: absWalletFile,
-		MoneroPort: *moneroPort,
-		WalletPort: *walletPort,
-		TestNet:    *testnet,
-	}
+	config := util.RecommendConfig(absDataDir)
+	config.WalletFile = absWalletFile
+	config.MoneroPort = *moneroPort
+	config.WalletPort = *walletPort
+	config.TestNet = *testnet
 
 	if *debug {
 		log.Printf("Using configuration: %+v", config)
